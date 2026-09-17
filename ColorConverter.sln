@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorConverter", "ColorConverter\ColorConverter.csproj", "{FE3A3334-2471-494C-AA06-8A5115B4A3E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{48E244C0-05AB-4D24-8BE7-E2B37B78E4C0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE3A3334-2471-494C-AA06-8A5115B4A3E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE3A3334-2471-494C-AA06-8A5115B4A3E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE3A3334-2471-494C-AA06-8A5115B4A3E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE3A3334-2471-494C-AA06-8A5115B4A3E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48E244C0-05AB-4D24-8BE7-E2B37B78E4C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48E244C0-05AB-4D24-8BE7-E2B37B78E4C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48E244C0-05AB-4D24-8BE7-E2B37B78E4C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48E244C0-05AB-4D24-8BE7-E2B37B78E4C0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61CD8CE9-7CCE-42F8-95DE-91DE0A88057A}
+	EndGlobalSection
+EndGlobal

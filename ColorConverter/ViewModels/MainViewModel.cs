@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+using System.Windows.Media;
+using System.Collections.ObjectModel;
 using Core.Interfaces;
 using Core.Models.Colors;
 
@@ -10,14 +11,11 @@ public sealed class MainViewModel : ViewModelBase
     private readonly IXyzConverter _xyzConverter;
     private readonly ILabConverter _labConverter;
 
-
     public RgbViewModel RGB { get; }
     public XyzViewModel XYZ { get; }
     public LabViewModel LAB { get; }
 
-
     private bool _isUpdating;
-
 
     private SolidColorBrush _previewBrush = Brushes.Black;
 
@@ -31,20 +29,38 @@ public sealed class MainViewModel : ViewModelBase
         }
     }
 
+    public ObservableCollection<string> Warnings { get; } = new();
 
-    private string _warningMessage = "";
-
-    public string WarningMessage
+    private void ValidateColors(
+        RgbColor rgb,
+        XyzColor xyz,
+        LabColor lab)
     {
-        get => _warningMessage;
-        private set
+        Warnings.Clear();
+
+        if (rgb.R < 0 || rgb.R > 255 ||
+            rgb.G < 0 || rgb.G > 255 ||
+            rgb.B < 0 || rgb.B > 255)
         {
-            _warningMessage = value;
-            OnPropertyChanged();
+            Warnings.Add("⚠ RGB: значения должны находиться в диапазоне 0..255");
+        }
+
+        if (xyz.X < 0 || xyz.Y < 0 || xyz.Z < 0)
+        {
+            Warnings.Add("⚠ XYZ: координаты не могут быть отрицательными");
+        }
+
+        if (lab.L < 0 || lab.L > 100)
+        {
+            Warnings.Add("⚠ LAB: значение L должно быть в диапазоне 0..100");
+        }
+
+        if (lab.A < -128 || lab.A > 127 ||
+            lab.B < -128 || lab.B > 127)
+        {
+            Warnings.Add("⚠ LAB: компоненты A и B выходят за рабочий диапазон");
         }
     }
-
-
 
     public MainViewModel(
         IRgbConverter rgbConverter,
@@ -69,8 +85,6 @@ public sealed class MainViewModel : ViewModelBase
         SetRgb(new RgbColor(120, 80, 200));
     }
 
-
-
     private void RgbChanged()
     {
         if (_isUpdating)
@@ -85,8 +99,6 @@ public sealed class MainViewModel : ViewModelBase
 
         SetRgb(rgb);
     }
-
-
 
     private void XyzChanged()
     {
@@ -103,8 +115,6 @@ public sealed class MainViewModel : ViewModelBase
         SetXyz(xyz);
     }
 
-
-
     private void LabChanged()
     {
         if (_isUpdating)
@@ -120,8 +130,6 @@ public sealed class MainViewModel : ViewModelBase
         SetLab(lab);
     }
 
-
-
     private void SetRgb(RgbColor rgb)
     {
         var xyz = _rgbConverter.ToXyz(rgb);
@@ -135,8 +143,6 @@ public sealed class MainViewModel : ViewModelBase
             lab,
             false);
     }
-
-
 
     private void SetXyz(XyzColor xyz)
     {
@@ -152,8 +158,6 @@ public sealed class MainViewModel : ViewModelBase
             rgb.WasClipped);
     }
 
-
-
     private void SetLab(LabColor lab)
     {
         var rgb = _labConverter.ToRgb(lab);
@@ -167,8 +171,6 @@ public sealed class MainViewModel : ViewModelBase
             lab,
             rgb.WasClipped);
     }
-
-
 
     private void UpdateAll(
         RgbColor rgb,
@@ -198,17 +200,18 @@ public sealed class MainViewModel : ViewModelBase
             PreviewBrush = CreateBrush(rgb);
 
 
-            WarningMessage = clipped
-                ? "Цвет выходит за пределы RGB и был обрезан."
-                : "";
+            ValidateColors(rgb, xyz, lab);
+
+            if (clipped)
+            {
+                Warnings.Add("⚠ RGB: цвет выходит за пределы sRGB и был обрезан");
+            }
         }
         finally
         {
             _isUpdating = false;
         }
     }
-
-
 
     private static SolidColorBrush CreateBrush(RgbColor rgb)
     {

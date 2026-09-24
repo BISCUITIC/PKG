@@ -1,4 +1,4 @@
-﻿<Window x:Class="ColorConverter.MainWindow"
+<Window x:Class="ColorConverter.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:ColorConverter"
@@ -273,12 +273,24 @@
         <!-- Предупреждение -->
 
 
-        <TextBlock Grid.Row="3"
-                   Text="{Binding WarningMessage}"
-                   Foreground="#D97706"
-                   FontSize="15"
-                   HorizontalAlignment="Center"
-                   Margin="0,10"/>
+        <ItemsControl Grid.Row="3"
+                      ItemsSource="{Binding Warnings}">
+
+            <ItemsControl.ItemTemplate>
+
+                <DataTemplate>
+
+                    <TextBlock Text="{Binding}"
+                               Foreground="#D97706"
+                               FontSize="15"
+                               HorizontalAlignment="Center"
+                               Margin="0,3"/>
+
+                </DataTemplate>
+
+            </ItemsControl.ItemTemplate>
+
+        </ItemsControl>
 
 
 

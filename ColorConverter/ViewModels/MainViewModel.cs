@@ -130,7 +130,7 @@ public sealed class MainViewModel : ViewModelBase
         SetLab(lab);
     }
 
-    private void SetRgb(RgbColor rgb)
+    public void SetRgb(RgbColor rgb)
     {
         var xyz = _rgbConverter.ToXyz(rgb);
 

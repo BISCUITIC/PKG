@@ -257,12 +257,80 @@
         <!-- Предпросмотр -->
 
 
-        <Border Grid.Row="2"
-                Margin="20"
-                CornerRadius="15"
-                Background="{Binding PreviewBrush}">
+        <Grid Grid.Row="2" Margin="20">
 
-        </Border>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    CornerRadius="15"
+                    Background="{Binding PreviewBrush}"/>
+
+            <Button Grid.Column="1"
+        Content="Палитра"
+        Click="PickColor_Click"
+        Margin="20,0,0,0"
+        Padding="22,10"
+        MinHeight="46"
+        VerticalAlignment="Center"
+        FontFamily="Segoe UI"
+        FontSize="15"
+        FontWeight="SemiBold"
+        Foreground="White"
+        Background="#4F46E5"
+        BorderBrush="Transparent"
+        BorderThickness="2"
+        Cursor="Hand"
+        FocusVisualStyle="{x:Null}"
+        ToolTip="Открыть палитру Windows">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="ButtonBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Padding="{TemplateBinding Padding}"
+                    CornerRadius="12">
+
+                            <ContentPresenter
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    RecognizesAccessKey="True"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                            Property="Background"
+                            Value="#4338CA"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                            Property="Background"
+                            Value="#3730A3"/>
+                            </Trigger>
+
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                            Property="BorderBrush"
+                            Value="#A5B4FC"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder"
+                            Property="Opacity"
+                            Value="0.45"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+        </Grid>
 
 
 

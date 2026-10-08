@@ -23,9 +23,3 @@ WPF-приложение для массового чтения основной
 - WPF
 - `System.Drawing`
 - `MetadataExtractor`
-
-## Структура
-
-- `ImageInfo.Core` — модели и интерфейсы;
-- `ImageInfo.Infrastructure` — чтение и анализ файлов;
-- `ImageInfo.Wpf` — пользовательский интерфейс.

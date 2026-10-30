@@ -58,7 +58,8 @@ public static class ImageMetadataReader
             NotSupportedException or
             FormatException or
             OverflowException or
-            ArgumentOutOfRangeException)
+            ArgumentOutOfRangeException or
+            IndexOutOfRangeException)
         {
             return new ImageInfo
             {
@@ -78,40 +79,49 @@ public static class ImageMetadataReader
 
     private static ImageInfo ParsePng(Stream s)
     {
-        Span<byte> header = stackalloc byte[33];
-        ReadExactly(s, header[..8]);
-        if (!header[..8].SequenceEqual(PngSignature))
+        Span<byte> signature = stackalloc byte[8];
+        ReadExactly(s, signature);
+        if (!signature.SequenceEqual(PngSignature))
             throw new InvalidDataException("Файл не является корректным PNG.");
 
-        ReadExactly(s, header[8..33]);
-        uint ihdrLength = BinaryPrimitives.ReadUInt32BigEndian(header[..4]);
-        if (ihdrLength != 13 || Encoding.ASCII.GetString(header[4..8]) != "IHDR")
-            throw new InvalidDataException("Повреждённый PNG: отсутствует IHDR.");
+        // Каждый PNG начинается с чанка IHDR: length (4), type (4), data (13), CRC (4).
+        Span<byte> chunkHeader = stackalloc byte[8];
+        ReadExactly(s, chunkHeader);
+        uint ihdrLength = BinaryPrimitives.ReadUInt32BigEndian(chunkHeader[..4]);
+        if (ihdrLength != 13 || Encoding.ASCII.GetString(chunkHeader[4..8]) != "IHDR")
+            throw new InvalidDataException("Повреждённый PNG: отсутствует корректный IHDR.");
 
-        uint width = BinaryPrimitives.ReadUInt32BigEndian(header[8..12]);
-        uint height = BinaryPrimitives.ReadUInt32BigEndian(header[12..16]);
-        int bitDepth = header[16];
-        int colorType = header[17];
+        Span<byte> ihdr = stackalloc byte[13];
+        ReadExactly(s, ihdr);
+        EnsureAvailable(s, 4); // CRC чанка IHDR
+        s.Position += 4;
+
+        uint width = BinaryPrimitives.ReadUInt32BigEndian(ihdr[..4]);
+        uint height = BinaryPrimitives.ReadUInt32BigEndian(ihdr[4..8]);
+        int bitDepth = ihdr[8];
+        int colorType = ihdr[9];
 
         if (width == 0 || height == 0)
             throw new InvalidDataException("PNG содержит нулевой размер изображения.");
         if (!IsValidPngBitDepth(colorType, bitDepth))
             throw new InvalidDataException("Некорректная комбинация глубины цвета и типа PNG.");
+        if (ihdr[10] != 0 || ihdr[11] != 0 || ihdr[12] > 1)
+            throw new InvalidDataException("PNG содержит неподдерживаемые методы сжатия, фильтрации или чересстрочности.");
 
         double? xDpi = null;
         double? yDpi = null;
 
-        // pHYs располагается до IDAT, поэтому достаточно просмотреть заголовки чанков до начала данных.
-        while (s.Position + 8 <= s.Length)
+        // pHYs по стандарту находится до IDAT. Читаем только метаданные чанков;
+        // сами сжатые пиксельные данные не загружаются в память.
+        while (s.Position < s.Length)
         {
-            Span<byte> chunkHeader = stackalloc byte[8];
-            ReadExactly(s, chunkHeader);
+            if (s.Length - s.Position < 8)
+                throw new InvalidDataException("Повреждённый PNG: неполный заголовок чанка.");
 
+            ReadExactly(s, chunkHeader);
             uint length = BinaryPrimitives.ReadUInt32BigEndian(chunkHeader[..4]);
             string type = Encoding.ASCII.GetString(chunkHeader[4..8]);
-
-            if ((long)length > s.Length - s.Position - 4)
-                throw new InvalidDataException("Повреждённый PNG: некорректная длина чанка.");
+            EnsureAvailable(s, (long)length + 4); // Данные чанка и CRC
 
             if (type == "pHYs" && length == 9)
             {
@@ -119,9 +129,7 @@ public static class ImageMetadataReader
                 ReadExactly(s, phys);
                 uint xPpm = BinaryPrimitives.ReadUInt32BigEndian(phys[..4]);
                 uint yPpm = BinaryPrimitives.ReadUInt32BigEndian(phys[4..8]);
-                byte unit = phys[8];
-
-                if (unit == 1)
+                if (phys[8] == 1)
                 {
                     xDpi = xPpm * 0.0254;
                     yDpi = yPpm * 0.0254;
@@ -133,7 +141,6 @@ public static class ImageMetadataReader
             }
 
             s.Position += 4; // CRC
-
             if (type is "IDAT" or "IEND")
                 break;
         }
@@ -180,6 +187,8 @@ public static class ImageMetadataReader
         int width = BinaryPrimitives.ReadUInt16LittleEndian(header[6..8]);
         int height = BinaryPrimitives.ReadUInt16LittleEndian(header[8..10]);
         byte packed = header[10];
+        if (width <= 0 || height <= 0)
+            throw new InvalidDataException("GIF содержит нулевой размер изображения.");
 
         bool hasGlobalColorTable = (packed & 0x80) != 0;
         int globalColorBits = (packed & 0x07) + 1;
@@ -208,9 +217,17 @@ public static class ImageMetadataReader
 
                     bool hasLocalColorTable = (imagePacked & 0x80) != 0;
                     if (hasLocalColorTable)
+                    {
                         pixelBits = (imagePacked & 0x07) + 1;
+                        long localTableBytes = 3L * (1L << pixelBits.Value);
+                        EnsureAvailable(s, localTableBytes);
+                        s.Position += localTableBytes;
+                    }
 
-                    // Дальше начинается LZW-данные изображения; заголовка достаточно.
+                    // Проверяем наличие минимального размера кода LZW, но не обходим все
+                    // подблоки пиксельных данных: для чтения метаданных это не требуется.
+                    if (s.ReadByte() < 0)
+                        throw new EndOfStreamException();
                     s.Position = s.Length;
                     break;
                 }
@@ -323,9 +340,10 @@ public static class ImageMetadataReader
         Span<byte> header = stackalloc byte[128];
         ReadExactly(s, header);
 
-        if (header[0] != 0x0A || header[2] != 1)
-            throw new InvalidDataException("Файл не является корректным PCX (ожидалась RLE-кодировка).");
+        if (header[0] != 0x0A || header[2] is not (0 or 1))
+            throw new InvalidDataException("Файл не является корректным PCX (неизвестная кодировка).");
 
+        byte encoding = header[2];
         int bitsPerPlane = header[3];
         int xmin = BinaryPrimitives.ReadUInt16LittleEndian(header[4..6]);
         int ymin = BinaryPrimitives.ReadUInt16LittleEndian(header[6..8]);
@@ -351,7 +369,7 @@ public static class ImageMetadataReader
             Dimensions = $"{width} × {height}",
             Resolution = FormatDpi(hres > 0 ? hres : null, vres > 0 ? vres : null),
             ColorDepth = $"{depth} бит/пиксель ({bitsPerPlane} бит × {planes} пл.)",
-            Compression = "RLE"
+            Compression = encoding == 1 ? "RLE" : "нет (без сжатия)"
         };
     }
 
@@ -472,7 +490,8 @@ public static class ImageMetadataReader
                 width = BinaryPrimitives.ReadUInt16BigEndian(sof[3..5]);
                 components = sof[5];
 
-                if (bits is <= 0 or > 16 || width <= 0 || height <= 0 || components <= 0)
+                if (bits is <= 0 or > 16 || width <= 0 || height <= 0 || components <= 0 ||
+                    dataLength < 6 + components.Value * 3)
                     throw new InvalidDataException("Повреждённый JPEG: некорректный SOF.");
 
                 compression = marker is 0xC3 or 0xC7 or 0xCB or 0xCF
@@ -524,7 +543,7 @@ public static class ImageMetadataReader
             throw new InvalidDataException("Поддерживается классический TIFF (magic = 42). BigTIFF не поддерживается.");
 
         uint ifdOffset = U32(header[4..8], littleEndian);
-        if (ifdOffset > s.Length - 2)
+        if (ifdOffset == 0 || ifdOffset > s.Length - 2)
             throw new InvalidDataException("Повреждённый TIFF: неверное смещение IFD.");
 
         s.Position = ifdOffset;

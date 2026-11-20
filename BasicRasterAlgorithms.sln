@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicRasterAlgorithms", "BasicRasterAlgorithms\BasicRasterAlgorithms.csproj", "{109679BE-DAC0-4A72-B14F-BA21C3CDD017}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RasterEngine", "RasterEngine\RasterEngine.csproj", "{B2ECA33B-D3B2-4213-84F4-5167FDC9C86F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RasterAlgorithms", "RasterAlgorithms\RasterAlgorithms.csproj", "{FBAA28A9-C48F-414D-8F9F-2AE2975FB875}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{109679BE-DAC0-4A72-B14F-BA21C3CDD017}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{109679BE-DAC0-4A72-B14F-BA21C3CDD017}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{109679BE-DAC0-4A72-B14F-BA21C3CDD017}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{109679BE-DAC0-4A72-B14F-BA21C3CDD017}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2ECA33B-D3B2-4213-84F4-5167FDC9C86F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2ECA33B-D3B2-4213-84F4-5167FDC9C86F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2ECA33B-D3B2-4213-84F4-5167FDC9C86F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2ECA33B-D3B2-4213-84F4-5167FDC9C86F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBAA28A9-C48F-414D-8F9F-2AE2975FB875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBAA28A9-C48F-414D-8F9F-2AE2975FB875}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBAA28A9-C48F-414D-8F9F-2AE2975FB875}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBAA28A9-C48F-414D-8F9F-2AE2975FB875}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A0B92A2F-DE8A-4A71-AA67-ED13BCFC5ABA}
+	EndGlobalSection
+EndGlobal

@@ -2,9 +2,9 @@
 
 namespace RasterEngine.Algorithms;
 
-public static class BresenhamCircle
+public class BresenhamCircle : ICircleRasterizationAlgorithm
 {
-    public static void Draw(
+    public void Draw(
         IRasterTarget target,
         int centerX,
         int centerY,

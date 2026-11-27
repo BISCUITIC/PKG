@@ -2,9 +2,9 @@
 
 namespace RasterEngine.Algorithms;
 
-public static class StepByStepLine
+public class StepByStepLine : ILineRasterizationAlgorithm
 {
-    public static void Draw(
+    public void Draw(
         IRasterTarget target,
         int x1,
         int y1,

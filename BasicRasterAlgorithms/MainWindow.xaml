@@ -3,19 +3,178 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BasicRasterAlgorithms"
         xmlns:controls="clr-namespace:BasicRasterAlgorithms.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Basic Raster Algorithms"
+        Height="600"
+        Width="950"
+        MinHeight="500"
+        MinWidth="800">
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="270"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <controls:GridPainter 
+        <ScrollViewer Grid.Column="0"
+                      VerticalScrollBarVisibility="Auto">
+
+            <StackPanel Margin="14">
+
+                <!-- Построение отрезка -->
+                <TextBlock Text="Построение отрезка"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,12"/>
+
+                <TextBlock Text="Алгоритм"/>
+
+                <ComboBox x:Name="LineAlgorithmSelector"
+                          DisplayMemberPath="Name"
+                          Margin="0,4,0,12"/>
+
+                <GroupBox Header="Координаты отрезка"
+                          Padding="8"
+                          Margin="0,0,0,10">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="X1"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+
+                        <TextBox x:Name="X1TextBox"
+                                 Grid.Column="1"
+                                 Text="-10"
+                                 Margin="0,2,8,2"/>
+
+                        <TextBlock Text="Y1"
+                                   Grid.Column="2"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+
+                        <TextBox x:Name="Y1TextBox"
+                                 Grid.Column="3"
+                                 Text="-5"
+                                 Margin="0,2"/>
+
+                        <TextBlock Text="X2"
+                                   Grid.Row="1"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+
+                        <TextBox x:Name="X2TextBox"
+                                 Grid.Row="1"
+                                 Grid.Column="1"
+                                 Text="10"
+                                 Margin="0,2,8,2"/>
+
+                        <TextBlock Text="Y2"
+                                   Grid.Row="1"
+                                   Grid.Column="2"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+
+                        <TextBox x:Name="Y2TextBox"
+                                 Grid.Row="1"
+                                 Grid.Column="3"
+                                 Text="5"
+                                 Margin="0,2"/>
+
+                    </Grid>
+                </GroupBox>
+
+                <Button Content="Нарисовать отрезок"
+                        Click="DrawLine_Click"
+                        Height="32"
+                        Margin="0,0,0,25"/>
+
+                <!-- Построение окружности -->
+                <TextBlock Text="Построение окружности"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,12"/>
+
+                <TextBlock Text="Алгоритм"/>
+
+                <ComboBox x:Name="CircleAlgorithmSelector"
+                          DisplayMemberPath="Name"
+                          Margin="0,4,0,12"/>
+
+                <GroupBox Header="Параметры окружности"
+                          Padding="8"
+                          Margin="0,0,0,10">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="32"/>
+                            <RowDefinition Height="32"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="X"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+
+                        <TextBox x:Name="CenterXTextBox"
+                                 Grid.Column="1"
+                                 Text="0"
+                                 Margin="0,2,8,2"/>
+
+                        <TextBlock Text="Y"
+                                   Grid.Column="2"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+
+                        <TextBox x:Name="CenterYTextBox"
+                                 Grid.Column="3"
+                                 Text="0"
+                                 Margin="0,2"/>
+
+                        <TextBlock Text="R"
+                                   Grid.Row="1"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"/>
+
+                        <TextBox x:Name="RadiusTextBox"
+                                 Grid.Row="1"
+                                 Grid.Column="1"
+                                 Text="10"
+                                 Margin="0,2,8,2"/>
+
+                    </Grid>
+                </GroupBox>
+
+                <Button Content="Нарисовать окружность"
+                        Click="DrawCircle_Click"
+                        Height="32"/>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Область рисования -->
+        <controls:GridPainter
             x:Name="GridPainter"
             Grid.Column="1"
             Zoom="1.0"/>
+
     </Grid>
 </Window>

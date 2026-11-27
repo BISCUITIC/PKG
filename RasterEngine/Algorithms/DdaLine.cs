@@ -2,9 +2,9 @@
 
 namespace RasterEngine.Algorithms;
 
-public static class DdaLine
+public class DdaLine : ILineRasterizationAlgorithm
 {
-    public static void Draw(
+    public void Draw(
         IRasterTarget target,
         int x1,
         int y1,
